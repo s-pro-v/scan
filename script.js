@@ -367,10 +367,10 @@ class CameraCore {
     async detectCode(isSilent = false) {
         if (!this.currentStream || !this.isPowerOn || this.videoElement.readyState !== this.videoElement.HAVE_ENOUGH_DATA) return;
 
-        let btnText = null;
+        let btnSub = null;
         if (!isSilent) {
-            btnText = this.btnScanCode.querySelector('.btn-text');
-            if (btnText) btnText.textContent = 'SKANOWANIE...';
+            btnSub = this.btnScanCode.querySelector('.sub-text');
+            if (btnSub) btnSub.textContent = 'PRACA...';
             this.scanLaser.classList.add('active');
         }
 
@@ -442,7 +442,7 @@ class CameraCore {
         } finally {
             if (!isSilent) {
                 this.scanLaser.classList.remove('active');
-                if (btnText) btnText.textContent = 'SKAN RĘCZNY';
+                if (btnSub) btnSub.textContent = 'RĘCZNY';
             }
         }
     }
@@ -454,7 +454,7 @@ class CameraCore {
 
         if (this.isAutoScanOn) {
             this.btnAutoScan.classList.add('active-tool');
-            this.autoScanText.textContent = 'AUTO: WŁ.';
+            this.autoScanText.textContent = 'WŁ.';
             if (this.scanLaser) this.scanLaser.classList.add('active');
             this.sysLog('TRYB AUTOMATYCZNY AKTYWNY', 'sys');
             this.startAutoScanLoop();
@@ -485,7 +485,7 @@ class CameraCore {
             this.btnAutoScan.classList.remove('active-tool');
         }
         if (this.autoScanText) {
-            this.autoScanText.textContent = 'AUTO: WYŁ.';
+            this.autoScanText.textContent = 'WYŁ.';
         }
         if (this.scanLaser) {
             this.scanLaser.classList.remove('active');
@@ -514,37 +514,37 @@ class CameraCore {
             return;
         }
 
-        const sendBtnText = this.btnSendToSlack.querySelector('.btn-text');
-        const originalBtnText = sendBtnText.textContent;
+        this.showConfirm('WYSŁAĆ RAPORT ARCHIWUM DO KANAŁU SLACK?', async () => {
+            const sendBtnText = this.btnSendToSlack.querySelector('.btn-text');
+            const originalBtnText = sendBtnText.textContent;
 
-        sendBtnText.textContent = 'WYSYŁANIE...';
-        this.btnSendToSlack.classList.add('disabled');
+            sendBtnText.textContent = 'WYSYŁANIE...';
+            this.btnSendToSlack.classList.add('disabled');
 
-        const textHeader = `*Mobilny Skaner OXY — Raport Archiwum Skanów*\n*Ilość skanów:* ${this.scannedCodes.length}\n*Data raportu:* ${new Date().toLocaleString()}\n\n`;
-        const textBody = this.scannedCodes.map(item => `• *[${item.format}]* (${item.time}): \`${item.value}\``).join('\n');
+            const textHeader = `*Mobilny Skaner OXY — Raport Archiwum Skanów*\n*Ilość skanów:* ${this.scannedCodes.length}\n*Data raportu:* ${new Date().toLocaleString()}\n\n`;
+            const textBody = this.scannedCodes.map(item => `• *[${item.format}]* (${item.time}): \`${item.value}\``).join('\n');
 
-        const payload = {
-            text: textHeader + textBody
-        };
+            const payload = {
+                text: textHeader + textBody
+            };
 
-        try {
-            await fetch(webhookUrl, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    // Slack webhook API allows text post requests
-                },
-                mode: 'no-cors' // Use no-cors to prevent preflight OPTIONS requests block in client-side context
-            });
+            try {
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: {},
+                    mode: 'no-cors'
+                });
 
-            this.sysLog('WYSŁANO RAPORT DO SLACKA', 'success');
-            alert('ARCHIWUM ZOSTAŁO WYSLANE DO KANAŁU SLACK!');
-        } catch (err) {
-            this.sysLog(`BŁĄD RAPORTOWANIA: ${err.message}`, 'error');
-        } finally {
-            sendBtnText.textContent = originalBtnText;
-            this.btnSendToSlack.classList.remove('disabled');
-        }
+                this.sysLog('WYSŁANO RAPORT DO SLACKA', 'success');
+                alert('ARCHIWUM ZOSTAŁO WYSLANE DO KANAŁU SLACK!');
+            } catch (err) {
+                this.sysLog(`BŁĄD RAPORTOWANIA: ${err.message}`, 'error');
+            } finally {
+                sendBtnText.textContent = originalBtnText;
+                this.btnSendToSlack.classList.remove('disabled');
+            }
+        });
     }
 
     openHistory() {
@@ -559,12 +559,39 @@ class CameraCore {
     }
 
     clearHistory() {
-        if (confirm('CZY NA PEWNO CHCESZ SKASOWAĆ CAŁĄ BAZĘ DANYCH?')) {
+        this.showConfirm('CZY NA PEWNO CHCESZ SKASOWAĆ CAŁĄ BAZĘ DANYCH?', () => {
             this.scannedCodes = [];
             localStorage.setItem('oxy_scanned_codes', JSON.stringify(this.scannedCodes));
             this.renderHistory();
             this.sysLog('BAZA DANYCH SKASOWANA', 'error');
-        }
+        });
+    }
+
+    showConfirm(message, onConfirm) {
+        const dialog = document.getElementById('custom-confirm-dialog');
+        const msgEl = document.getElementById('custom-confirm-message');
+        const btnCancel = document.getElementById('btn-confirm-cancel');
+        const btnOk = document.getElementById('btn-confirm-ok');
+
+        if (!dialog || !msgEl || !btnCancel || !btnOk) return;
+
+        msgEl.textContent = message.toUpperCase();
+        dialog.classList.add('open');
+
+        // Resetowanie nasłuchiwaczy zdarzeń poprzez klonowanie elementów
+        const newBtnCancel = btnCancel.cloneNode(true);
+        const newBtnOk = btnOk.cloneNode(true);
+        btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+        btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+
+        newBtnCancel.addEventListener('click', () => {
+            dialog.classList.remove('open');
+        });
+
+        newBtnOk.addEventListener('click', () => {
+            dialog.classList.remove('open');
+            if (onConfirm) onConfirm();
+        });
     }
 
     deleteHistoryItem(index) {

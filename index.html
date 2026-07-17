@@ -75,15 +75,15 @@
             </div>
 
             <div class="hardware-controls">
-                <button class="sys-btn tool-btn" id="btn-power">
+                <button class="sys-btn tool-btn two-lines" id="btn-power">
                     <span class="btn-text">PWR</span>
                     <span class="sub-text">OFFLINE</span>
                 </button>
-                <button class="sys-btn tool-btn disabled" id="btn-lens-cycle">
+                <button class="sys-btn tool-btn disabled two-lines" id="btn-lens-cycle">
                     <span class="btn-text">LENS_SW</span>
                     <span class="sub-text" id="lens-label">SZUKAM...</span>
                 </button>
-                <button class="sys-btn tool-btn disabled" id="btn-torch">
+                <button class="sys-btn tool-btn disabled two-lines" id="btn-torch">
                     <span class="btn-text">TORCH</span>
                     <span class="sub-text">FLESZ</span>
                 </button>
@@ -92,14 +92,17 @@
             <div class="action-grid">
                 <div class="radiator-vent"></div>
                 <div class="action-grid-row">
-                    <button class="sys-btn massive-btn scan-action disabled" id="btn-scan-code">
-                        <span class="btn-text">RĘCZNY</span>
+                    <button class="sys-btn massive-btn scan-action disabled two-lines" id="btn-scan-code">
+                        <span class="btn-text">SKAN</span>
+                        <span class="sub-text">RĘCZNY</span>
                     </button>
-                    <button class="sys-btn massive-btn disabled" id="btn-auto-scan">
-                        <span class="btn-text" id="auto-scan-text">AUTO: WYŁ.</span>
+                    <button class="sys-btn massive-btn disabled two-lines" id="btn-auto-scan">
+                        <span class="btn-text">AUTO</span>
+                        <span class="sub-text" id="auto-scan-text">WYŁ.</span>
                     </button>
-                    <button class="sys-btn massive-btn disabled" id="btn-capture">
+                    <button class="sys-btn massive-btn disabled two-lines" id="btn-capture">
                         <span class="btn-text">FOTO</span>
+                        <span class="sub-text">ZAPIS</span>
                     </button>
                 </div>
             </div>
@@ -131,12 +134,39 @@
             </div>
 
             <div class="history-footer">
-                <button class="sys-btn tool-btn" id="btn-clear-history">
-                    <span class="btn-text">WYCZYŚĆ BAZĘ</span>
+                <button class="sys-btn tool-btn two-lines" id="btn-clear-history">
+                    <span class="btn-text">BAZA</span>
+                    <span class="sub-text">CZYŚĆ</span>
                 </button>
-                <button class="sys-btn tool-btn active-tool" id="btn-close-history">
-                    <span class="btn-text">POWRÓT // ZAMKNIJ</span>
+                <button class="sys-btn tool-btn active-tool two-lines" id="btn-close-history">
+                    <span class="btn-text">POWRÓT</span>
+                    <span class="sub-text">ZAMKNIJ</span>
                 </button>
+            </div>
+        </div>
+
+        <!-- Custom confirmation modal -->
+        <div class="custom-dialog-overlay" id="custom-confirm-dialog">
+            <div class="custom-dialog-box">
+                <div class="corner-bracket top-left"></div>
+                <div class="corner-bracket bottom-right"></div>
+                <div class="dialog-header">
+                    <span class="dialog-title">SYS // POTWIERDZENIE</span>
+                    <div class="zebra-stripe"></div>
+                </div>
+                <div class="dialog-body" id="custom-confirm-message">
+                    CZY NA PEWNO CHCESZ SKASOWAĆ CAŁĄ BAZĘ DANYCH?
+                </div>
+                <div class="dialog-actions">
+                    <button class="sys-btn tool-btn two-lines" id="btn-confirm-cancel">
+                        <span class="btn-text">ANULUJ</span>
+                        <span class="sub-text">POWRÓT</span>
+                    </button>
+                    <button class="sys-btn tool-btn active-tool two-lines" id="btn-confirm-ok">
+                        <span class="btn-text">TAK</span>
+                        <span class="sub-text">POTWIERDŹ</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

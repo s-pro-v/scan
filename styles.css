@@ -187,8 +187,18 @@ html {
 
 .top-module {
     padding: 12px 14px;
-    border-bottom: 2px solid var(--color-accent);
     background: var(--bg-header-gradient);
+    position: relative;
+}
+
+.top-module::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 2px;
+    background-color: var(--color-accent);
 }
 
 .header-content {
@@ -250,8 +260,8 @@ h1 {
 }
 
 .corner-bracket.top-left {
-    top: -2px;
-    left: -2px;
+    top: 0px;
+    left: 0px;
     border-right: none;
     border-bottom: none;
 }
@@ -271,7 +281,7 @@ h1 {
 }
 
 .corner-bracket.bottom-right {
-    bottom: -2px;
+    bottom: 0px;
     right: -2px;
     border-left: none;
     border-top: none;
@@ -538,6 +548,23 @@ canvas#capture-canvas {
     color: var(--color-btn-disabled);
     background-color: var(--bg-button-disabled);
     pointer-events: none;
+}
+
+.sys-btn.two-lines {
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 6px 8px;
+}
+
+.sys-btn.two-lines .btn-text {
+    align-self: flex-start;
+    text-align: left;
+}
+
+.sys-btn.two-lines .sub-text {
+    align-self: flex-end;
+    text-align: right;
+    margin-top: auto;
 }
 
 /* Zoom module styles */
@@ -874,6 +901,10 @@ canvas#capture-canvas {
     height: clamp(32px, 4.5vh, 40px);
 }
 
+.tool-btn.two-lines {
+    height: clamp(38px, 5vh, 44px);
+}
+
 .massive-btn {
     padding: 8px 10px;
     font-size: clamp(10px, 1.5vh, 12px);
@@ -911,4 +942,70 @@ canvas#capture-canvas {
 
 .slack-btn:active .btn-text {
     color: #ffffff !important;
+}
+
+/* Custom dialog overlay */
+.custom-dialog-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-speed) ease;
+}
+
+.custom-dialog-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.custom-dialog-box {
+    background-color: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    position: relative;
+    padding: 16px;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--color-accent);
+    padding-bottom: 6px;
+}
+
+.dialog-title {
+    font-family: var(--font-title);
+    font-size: 11px;
+    color: var(--color-accent);
+    letter-spacing: 1px;
+}
+
+.dialog-body {
+    font-size: 10px;
+    color: var(--color-data);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    margin: 4px 0;
+}
+
+.dialog-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
 }
