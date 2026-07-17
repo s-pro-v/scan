@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYS.OPTICS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="oxy-mobile-env">
+        <header class="panel top-module">
+            <div class="corner-bracket top-left"></div>
+            <div class="corner-bracket bottom-right"></div>
+            <div class="header-content">
+                <h1>SYS.OPTICS</h1>
+                <div class="sys-status">
+                    <span class="kernel">WEBRTC_API // LENS_CTRL</span>
+                    <div class="zebra-stripe warning-band"></div>
+                </div>
+            </div>
+        </header>
+
+        <main class="panel viewport-module">
+            <div class="corner-bracket top-right"></div>
+            <div class="corner-bracket bottom-left"></div>
+
+            <div class="viewport-header">
+                <span class="data-label" id="cam-info">SENSOR // OFFLINE</span>
+                <span class="tech-coords">
+                    RES: <span id="cam-res">0x0</span>
+                </span>
+            </div>
+
+            <div class="camera-container">
+                <video id="live-feed" autoplay playsinline muted></video>
+                <canvas id="capture-canvas"></canvas>
+
+                <div class="hud-layer">
+                    <div class="crosshairs-center"></div>
+                    <div class="focus-bracket top-left"></div>
+                    <div class="focus-bracket top-right"></div>
+                    <div class="focus-bracket bottom-left"></div>
+                    <div class="focus-bracket bottom-right"></div>
+                    <div class="scan-line" id="scan-laser"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="panel control-module">
+            <div class="corner-bracket top-left"></div>
+
+            <div class="terminal-log" id="event-log">
+                <div class="log-entry">
+                    &gt; INICJALIZACJA SYSTEMU OPTYCZNEGO...
+                </div>
+            </div>
+
+            <div class="hardware-controls">
+                <button class="sys-btn tool-btn" id="btn-switch">
+                    <span class="btn-text">CAM_SW</span>
+                </button>
+                <button class="sys-btn tool-btn" id="btn-torch">
+                    <span class="btn-text">TORCH</span>
+                </button>
+            </div>
+
+            <div class="action-grid">
+                <div class="radiator-vent"></div>
+                <button class="sys-btn massive-btn" id="btn-capture">
+                    <span class="btn-text">REJESTRUJ OBRAZ</span>
+                </button>
+            </div>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
