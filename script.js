@@ -130,10 +130,204 @@ class CameraCore {
         }, 800);
     }
 
+    async getCameraInfo(cameraId) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}`);
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD GET Camera Info', 'error');
+        }
+    }
+
+    async setCameraSettings(cameraId, resolution, format, exposure, aperture, shutterSpeed) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/settings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    resolution,
+                    format,
+                    exposure,
+                    aperture,
+                    shutterSpeed
+                })
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD POST Camera Settings', 'error');
+        }
+    }
+
+    async takePicture(cameraId) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/picture`);
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD GET Picture', 'error');
+        }
+    }
+
+    async startRecording(cameraId) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/recording`, {
+                method: 'POST'
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD POST Start Recording', 'error');
+        }
+    }
+
+    async stopRecording(cameraId) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/recording`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD DELETE Stop Recording', 'error');
+        }
+    }
+
+    async getVideoStream(cameraId) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/stream`, {
+                method: 'GET'
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD GET Video Stream', 'error');
+        }
+    }
+
+    async setVideoQuality(cameraId, quality) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/quality`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    quality
+                })
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD POST Video Quality', 'error');
+        }
+    }
+
+    async getAudioSettings(cameraId) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/audio`, {
+                method: 'GET'
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD GET Audio Settings', 'error');
+        }
+    }
+
+    async setAudioSettings(cameraId, volume, balance) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/audio`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    volume,
+                    balance
+                })
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD POST Audio Settings', 'error');
+        }
+    }
+
+    async getLowlightSettings(cameraId) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/lowlight`, {
+                method: 'GET'
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD GET Lowlight Settings', 'error');
+        }
+    }
+
+    async setLowlightSettings(cameraId, gain) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/lowlight`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    gain
+                })
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD POST Lowlight Settings', 'error');
+        }
+    }
+
+    async getFocusSettings(cameraId) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/focus`, {
+                method: 'GET'
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD GET Focus Settings', 'error');
+        }
+    }
+
+    async setFocusSettings(cameraId, distance) {
+        try {
+            const response = await fetch(`https://api camera-system.com/v1/cameras/${cameraId}/focus`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    distance
+                })
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            this.sysLog('BŁĄD POST Focus Settings', 'error');
+        }
+    }
+
     initControls() {
         document.getElementById('btn-switch').addEventListener('click', () => this.switchCamera());
         document.getElementById('btn-torch').addEventListener('click', () => this.toggleTorch());
         document.getElementById('btn-capture').addEventListener('click', () => this.captureFrame());
+    }
+
+    toggleTorch() {
+        // Symulacja zarządzania torchem
+        setTimeout(() => {
+            this.sysLog(`TORCH: AKTYWNY`, 'success');
+        }, 1000);
     }
 }
 
