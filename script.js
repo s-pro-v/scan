@@ -142,7 +142,6 @@ class CameraCore {
 
             // Najpierw prosimy o ogólny dostęp, żeby odblokować EnumerateDevices
             let stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-            this.currentStream = stream;
             this.hasInitialPermission = true;
 
             await this.enumerateRearCameras();
@@ -151,7 +150,19 @@ class CameraCore {
                 ? this.rearCameras[0].deviceId
                 : null;
 
-            await this.startSpecificCamera(targetDeviceId);
+            // Sprawdzamy, czy ten początkowy strumień jest już na odpowiednim urządzeniu
+            const activeTrack = stream.getVideoTracks()[0];
+            const activeDeviceId = activeTrack ? activeTrack.getSettings().deviceId : null;
+
+            if (targetDeviceId && activeDeviceId && targetDeviceId === activeDeviceId) {
+                // Wykorzystaj ten sam strumień bez restartowania sprzętu!
+                await this.startSpecificCamera(targetDeviceId, stream);
+            } else {
+                // Jeśli obiektyw docelowy jest inny, zamykamy stary strumień
+                stream.getTracks().forEach(t => t.stop());
+                // Uruchamiamy normalną ścieżkę (która doda 200ms na reset sterownika)
+                await this.startSpecificCamera(targetDeviceId);
+            }
 
         } catch (error) {
             let errMsg = error.message || error.name;
@@ -198,31 +209,53 @@ class CameraCore {
         this.startSpecificCamera(nextDevice.deviceId);
     }
 
-    async startSpecificCamera(deviceId) {
-        if (this.currentStream) {
-            this.currentStream.getTracks().forEach(track => track.stop());
+    async startSpecificCamera(deviceId, existingStream = null) {
+        // Zatrzymanie trybu automatycznego
+        this.stopAutoScanSilent();
+
+        let track = null;
+
+        if (existingStream) {
+            this.sysLog('REUZYCIE STRUMIENIA AKTYWNEGO SENSORA', 'sys');
+            this.currentStream = existingStream;
+            track = existingStream.getVideoTracks()[0];
+        } else {
+            // Zamykamy stary strumień jeśli istnieje
+            if (this.currentStream) {
+                this.sysLog('RESETOWANIE STRUMIENIA SENSORA...', 'sys');
+                this.currentStream.getTracks().forEach(t => t.stop());
+                this.currentStream = null;
+                // Krótkie opóźnienie (200ms) aby sterownik systemu zdążył zwolnić zasób kamery
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+
+            this.isTorchOn = false;
+            if (this.btnTorch) {
+                this.btnTorch.classList.remove('active-tool');
+                this.btnTorch.classList.add('disabled');
+            }
+            if (this.zoomContainer) {
+                this.zoomContainer.style.display = 'none';
+            }
+
+            this.lensLabel.textContent = `LENS_ID: ${this.currentCameraIndex}`;
+
+            const constraints = deviceId
+                ? { video: { deviceId: { exact: deviceId } } }
+                : { video: { facingMode: "environment" } };
+
+            try {
+                this.sysLog(`ŁĄCZENIE Z SENSOR ID:${this.currentCameraIndex}...`, 'sys');
+                this.currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                track = this.currentStream.getVideoTracks()[0];
+            } catch (error) {
+                this.sysLog(`BŁĄD SENSORA ID:${this.currentCameraIndex}: ${error.message || error.name}`, 'error');
+                return;
+            }
         }
 
-        this.isTorchOn = false;
-        this.btnTorch.classList.remove('active-tool');
-        this.btnTorch.classList.add('disabled');
-        this.zoomContainer.style.display = 'none';
-
-        this.lensLabel.textContent = `LENS_ID: ${this.currentCameraIndex}`;
-
-        const constraints = deviceId
-            ? { video: { deviceId: { exact: deviceId } } }
-            : { video: { facingMode: "environment" } };
-
-        try {
-            this.sysLog(`ŁĄCZENIE Z SENSOR ID:${this.currentCameraIndex}...`, 'sys');
-            this.currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-            this.videoElement.srcObject = this.currentStream;
-
-            try { await this.videoElement.play(); } catch (e) { }
-
-            const track = this.currentStream.getVideoTracks()[0];
-
+        // Zawsze bindujemy zdarzenie wczytywania metadanych PRZED ustawieniem srcObject
+        if (track) {
             this.videoElement.onloadedmetadata = () => {
                 this.resLabel.textContent = `${this.videoElement.videoWidth}x${this.videoElement.videoHeight}`;
                 this.infoLabel.textContent = `LENS[${this.currentCameraIndex}] // ONLINE`;
@@ -240,12 +273,16 @@ class CameraCore {
                 this.btnAutoScan.classList.remove('disabled');
                 this.btnCapture.classList.remove('disabled');
 
-                // Z lekkim opóźnieniem badamy możliwości sprzętowe (Torch, Zoom)
+                // Badamy parametry sprzętowe (Torch, Zoom)
                 setTimeout(() => this.checkHardwareCapabilities(track), 500);
             };
 
-        } catch (error) {
-            this.sysLog(`BŁĄD SENSORA ID:${this.currentCameraIndex}`, 'error');
+            this.videoElement.srcObject = this.currentStream;
+            try {
+                await this.videoElement.play();
+            } catch (e) {
+                this.sysLog('BŁĄD STARTU PODGLĄDU WIDEO', 'error');
+            }
         }
     }
 
