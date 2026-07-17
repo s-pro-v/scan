@@ -3,9 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYS.OPTICS</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobilny Skaner OXY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
 </head>
 
 <body>
@@ -14,10 +19,22 @@
             <div class="corner-bracket top-left"></div>
             <div class="corner-bracket bottom-right"></div>
             <div class="header-content">
-                <h1>SYS.OPTICS</h1>
-                <div class="sys-status">
-                    <span class="kernel">WEBRTC_API // LENS_CTRL</span>
-                    <div class="zebra-stripe warning-band"></div>
+                <div class="header-branding">
+                    <h1>SYS.SCANNER</h1>
+                    <div class="kernel">
+                        <span>WEBRTC // MULTI_LENS</span>
+                        <div class="zebra-stripe"></div>
+                    </div>
+                </div>
+                <div class="header-controls-group">
+                    <button class="sys-btn tool-btn" id="btn-toggle-theme"
+                        style="height: 32px; width: 32px; padding: 0; font-size: 11px; border-color: rgba(255, 94, 0, 0.4); display: flex; align-items: center; justify-content: center;">
+                        <span class="btn-text" id="theme-btn-text">☀</span>
+                    </button>
+                    <button class="sys-btn tool-btn" id="btn-toggle-history"
+                        style="height: 32px; padding: 0 12px; font-size: 10px; border-color: rgba(255, 94, 0, 0.4);">
+                        <span class="btn-text">DATA_DB</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -27,53 +44,116 @@
             <div class="corner-bracket bottom-left"></div>
 
             <div class="viewport-header">
-                <span class="data-label" id="cam-info">SENSOR // OFFLINE</span>
-                <span class="tech-coords">
-                    RES: <span id="cam-res">0x0</span>
-                </span>
+                <span class="data-label" id="cam-info">SYS // OFFLINE</span>
+                <span class="data-label" id="barcode-format" style="color: var(--color-accent);">FMT: UNKNOWN</span>
+                <span class="tech-coords">RES: <span id="cam-res">0x0</span></span>
             </div>
 
-            <div class="camera-container">
+            <div class="camera-container" style="margin-bottom: 8px;">
                 <video id="live-feed" autoplay playsinline muted></video>
                 <canvas id="capture-canvas"></canvas>
-
                 <div class="hud-layer">
                     <div class="crosshairs-center"></div>
-                    <div class="focus-bracket top-left"></div>
-                    <div class="focus-bracket top-right"></div>
-                    <div class="focus-bracket bottom-left"></div>
-                    <div class="focus-bracket bottom-right"></div>
                     <div class="scan-line" id="scan-laser"></div>
                 </div>
+            </div>
+
+            <div class="scanned-field-container" style="display: flex; gap: 6px; z-index: 10;">
+                <input type="text" id="input-scanned-val" placeholder="OCZEKIWANIE NA SKAN..." readonly
+                    style="flex-grow: 1; height: 36px; padding: 0 10px; background: var(--bg-terminal); border: 1px solid var(--border-color); color: var(--color-data); font-family: var(--font-tech); font-size: 11px; outline: none; transition: border-color 0.25s ease;">
+                <button class="sys-btn tool-btn" id="btn-copy-input"
+                    style="height: 36px; padding: 0 12px; font-size: 10px; border-color: rgba(255, 94, 0, 0.4);">
+                    <span class="btn-text">KOPIUJ</span>
+                </button>
             </div>
         </main>
 
         <footer class="panel control-module">
             <div class="corner-bracket top-left"></div>
 
-            <div class="terminal-log" id="event-log">
-                <div class="log-entry">
-                    &gt; INICJALIZACJA SYSTEMU OPTYCZNEGO...
+            <div class="terminal-log" id="event-log"></div>
+
+            <div class="zoom-module" id="zoom-container">
+                <div class="zoom-label">
+                    <span>OPTICAL_ZOOM</span><span id="zoom-val" style="color:var(--color-accent)">1.0x</span>
                 </div>
+                <input type="range" id="zoom-slider" class="sys-slider" min="1" max="3" step="0.1" value="1">
             </div>
 
             <div class="hardware-controls">
-                <button class="sys-btn tool-btn" id="btn-switch">
-                    <span class="btn-text">CAM_SW</span>
+                <button class="sys-btn tool-btn" id="btn-power">
+                    <span class="btn-text">PWR</span>
+                    <span class="sub-text">OFFLINE</span>
                 </button>
-                <button class="sys-btn tool-btn" id="btn-torch">
+                <button class="sys-btn tool-btn disabled" id="btn-lens-cycle">
+                    <span class="btn-text">LENS_SW</span>
+                    <span class="sub-text" id="lens-label">SZUKAM...</span>
+                </button>
+                <button class="sys-btn tool-btn disabled" id="btn-torch">
                     <span class="btn-text">TORCH</span>
+                    <span class="sub-text">FLESZ</span>
                 </button>
             </div>
 
             <div class="action-grid">
                 <div class="radiator-vent"></div>
-                <button class="sys-btn massive-btn" id="btn-capture">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-bottom: 8px;">
+                    <button class="sys-btn massive-btn scan-action disabled" id="btn-scan-code"
+                        style="min-height: 44px; padding: 10px;">
+                        <span class="btn-text">SKAN RĘCZNY</span>
+                    </button>
+                    <button class="sys-btn massive-btn disabled" id="btn-auto-scan"
+                        style="min-height: 44px; padding: 10px;">
+                        <span class="btn-text" id="auto-scan-text">AUTO: WYŁ.</span>
+                    </button>
+                </div>
+                <button class="sys-btn massive-btn disabled" id="btn-capture" style="width: 100%;">
                     <span class="btn-text">REJESTRUJ OBRAZ</span>
                 </button>
             </div>
         </footer>
+
+        <!-- History database overlay -->
+        <div class="history-overlay" id="history-overlay">
+            <div class="history-header">
+                <span class="history-title">SYS // ARCHIWUM_SKANOW</span>
+                <div class="zebra-stripe" style="width: 40px; margin: 0 8px;"></div>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- Spans inserted dynamically by JS -->
+            </div>
+
+            <div class="slack-integration-panel"
+                style="margin: 10px 0; border-top: 1px dashed var(--border-color); padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 8px; color: var(--color-meta); letter-spacing: 0.5px;">SLACK INTEGRATION //
+                        UPLINK</span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                    <input type="password" id="slack-webhook-input" placeholder="WPROWADŹ WEBHOOK URL..."
+                        style="flex-grow: 1; height: 32px; padding: 0 10px; background: var(--bg-terminal); border: 1px solid var(--border-color); color: var(--color-data); font-family: var(--font-tech); font-size: 10px; outline: none;">
+                    <button class="sys-btn tool-btn" id="btn-save-webhook"
+                        style="height: 32px; padding: 0 10px; font-size: 9px; border-color: rgba(255, 94, 0, 0.4);">
+                        <span class="btn-text">ZAPISZ</span>
+                    </button>
+                </div>
+                <button class="sys-btn massive-btn slack-btn" id="btn-send-to-slack"
+                    style="min-height: 36px; padding: 6px; font-size: 11px;">
+                    <span class="btn-text">WYŚLIJ ARCHIWUM DO SLACK</span>
+                </button>
+            </div>
+
+            <div class="history-footer">
+                <button class="sys-btn tool-btn" id="btn-clear-history">
+                    <span class="btn-text">WYCZYŚĆ BAZĘ</span>
+                </button>
+                <button class="sys-btn tool-btn active-tool" id="btn-close-history">
+                    <span class="btn-text">POWRÓT // ZAMKNIJ</span>
+                </button>
+            </div>
+        </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 
