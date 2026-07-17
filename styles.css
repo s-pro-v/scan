@@ -55,9 +55,9 @@
      --font-tech: 'Share Tech Mono', monospace;
 
      /* Sizes / Spacings */
-     --spacing-env: 12px;
-     --spacing-padding: 12px;
-     --spacing-gap: 12px;
+     --spacing-env: clamp(6px, 1.2vh, 12px);
+     --spacing-padding: clamp(6px, 1.2vh, 12px);
+     --spacing-gap: clamp(6px, 1.2vh, 12px);
      --corner-size: 14px;
      --radius-emulator: 24px;
 
@@ -98,8 +98,8 @@
  }
 
  .oxy-mobile-env {
-     display: grid;
-     grid-template-rows: auto 1fr auto;
+     display: flex;
+     flex-direction: column;
      gap: var(--spacing-gap);
      height: 100dvh;
      width: 100vw;
@@ -262,6 +262,8 @@
      border: 1px solid var(--border-color);
      background: var(--bg-viewport);
      position: relative;
+     height: 50%;
+     flex-shrink: 0;
  }
 
  .viewport-header {
@@ -416,11 +418,15 @@
      background: var(--bg-footer-gradient);
      display: flex;
      flex-direction: column;
-     gap: 12px;
+     gap: clamp(6px, 1.2vh, 12px);
+     flex-grow: 1;
+     justify-content: space-between;
+     overflow: hidden;
  }
 
  .terminal-log {
-     height: clamp(65px, 12vh, 90px);
+     flex: 1 1 50px;
+     min-height: 45px;
      border: 1px solid var(--border-color);
      padding: 8px 10px;
      background-color: var(--bg-terminal);
@@ -639,19 +645,19 @@
  }
 
  .tool-btn {
-     padding: 10px 6px;
-     font-size: 11px;
+     padding: 8px 6px;
+     font-size: 10px;
      letter-spacing: 0.5px;
-     height: 48px;
+     height: clamp(32px, 4.5vh, 40px);
  }
-
+ 
  .massive-btn {
-     padding: 14px;
-     font-size: 13px;
+     padding: 10px 14px;
+     font-size: clamp(11px, 1.6vh, 13px);
      font-weight: 700;
      letter-spacing: 1px;
      border-width: 1.5px;
-     min-height: 48px;
+     min-height: clamp(38px, 5.2vh, 48px);
  }
 
  .scan-action {
