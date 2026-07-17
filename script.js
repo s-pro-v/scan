@@ -643,14 +643,12 @@ class CameraCore {
     }
 
     applyTheme() {
-        if (this.currentTheme === 'light') {
-            document.documentElement.classList.add('light-theme');
-            document.body.classList.add('light-theme');
-            if (this.themeBtnText) this.themeBtnText.textContent = '🌙';
-        } else {
-            document.documentElement.classList.remove('light-theme');
-            document.body.classList.remove('light-theme');
+        if (this.currentTheme === 'dark') {
+            document.documentElement.setAttribute('theme', 'dark');
             if (this.themeBtnText) this.themeBtnText.textContent = '☀';
+        } else {
+            document.documentElement.removeAttribute('theme');
+            if (this.themeBtnText) this.themeBtnText.textContent = '🌙';
         }
     }
 
