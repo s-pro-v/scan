@@ -4,7 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ff7120">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="SYS.SCANNER">
     <title>Mobilny Skaner OXY</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -25,10 +32,10 @@
                     </div>
                 </div>
                 <div class="header-controls-group">
-                    <button class="sys-btn tool-btn" id="btn-toggle-theme">
+                    <button class="sys-btn tool-btn icon-btn" id="btn-toggle-theme" type="button">
                         <span class="btn-text" id="theme-btn-text">☀</span>
                     </button>
-                    <button class="sys-btn tool-btn" id="btn-toggle-history">
+                    <button class="sys-btn tool-btn" id="btn-toggle-history" type="button">
                         <span class="btn-text">DATA_DB</span>
                     </button>
                 </div>
@@ -46,17 +53,22 @@
             </div>
 
             <div class="camera-container">
-                <video id="live-feed" autoplay playsinline muted></video>
+                <video id="live-feed" autoplay playsinline webkit-playsinline muted></video>
                 <canvas id="capture-canvas"></canvas>
                 <div class="hud-layer">
-                    <div class="crosshairs-center"></div>
-                    <div class="scan-line" id="scan-laser"></div>
+                    <div class="scan-reticle" id="scan-reticle">
+                        <span class="reticle-corner tl"></span>
+                        <span class="reticle-corner tr"></span>
+                        <span class="reticle-corner bl"></span>
+                        <span class="reticle-corner br"></span>
+                        <div class="scan-line" id="scan-laser"></div>
+                    </div>
                 </div>
             </div>
 
             <div class="scanned-field-container">
                 <input type="text" id="input-scanned-val" placeholder="OCZEKIWANIE NA SKAN..." readonly>
-                <button class="sys-btn tool-btn" id="btn-copy-input">
+                <button class="sys-btn tool-btn inline-btn" id="btn-copy-input" type="button">
                     <span class="btn-text">KOPIUJ</span>
                 </button>
             </div>
@@ -75,15 +87,15 @@
             </div>
 
             <div class="hardware-controls">
-                <button class="sys-btn tool-btn two-lines" id="btn-power">
+                <button class="sys-btn tool-btn two-lines" id="btn-power" type="button">
                     <span class="btn-text">PWR</span>
                     <span class="sub-text">OFFLINE</span>
                 </button>
-                <button class="sys-btn tool-btn disabled two-lines" id="btn-lens-cycle">
+                <button class="sys-btn tool-btn disabled two-lines" id="btn-lens-cycle" type="button">
                     <span class="btn-text">LENS_SW</span>
                     <span class="sub-text" id="lens-label">SZUKAM...</span>
                 </button>
-                <button class="sys-btn tool-btn disabled two-lines" id="btn-torch">
+                <button class="sys-btn tool-btn disabled two-lines" id="btn-torch" type="button">
                     <span class="btn-text">TORCH</span>
                     <span class="sub-text">FLESZ</span>
                 </button>
@@ -92,15 +104,15 @@
             <div class="action-grid">
                 <div class="radiator-vent"></div>
                 <div class="action-grid-row">
-                    <button class="sys-btn massive-btn scan-action disabled two-lines" id="btn-scan-code">
+                    <button class="sys-btn massive-btn scan-action disabled two-lines" id="btn-scan-code" type="button">
                         <span class="btn-text">SKAN</span>
                         <span class="sub-text">RĘCZNY</span>
                     </button>
-                    <button class="sys-btn massive-btn disabled two-lines" id="btn-auto-scan">
+                    <button class="sys-btn massive-btn disabled two-lines" id="btn-auto-scan" type="button">
                         <span class="btn-text">AUTO</span>
                         <span class="sub-text" id="auto-scan-text">WYŁ.</span>
                     </button>
-                    <button class="sys-btn massive-btn disabled two-lines" id="btn-capture">
+                    <button class="sys-btn massive-btn disabled two-lines" id="btn-capture" type="button">
                         <span class="btn-text">FOTO</span>
                         <span class="sub-text">ZAPIS</span>
                     </button>
@@ -124,21 +136,21 @@
                 </div>
                 <div class="slack-input-row">
                     <input type="password" id="slack-webhook-input" placeholder="WPROWADŹ WEBHOOK URL...">
-                    <button class="sys-btn tool-btn" id="btn-save-webhook">
+                    <button class="sys-btn tool-btn inline-btn" id="btn-save-webhook" type="button">
                         <span class="btn-text">ZAPISZ</span>
                     </button>
                 </div>
-                <button class="sys-btn massive-btn slack-btn" id="btn-send-to-slack">
+                <button class="sys-btn massive-btn slack-btn" id="btn-send-to-slack" type="button">
                     <span class="btn-text">WYŚLIJ ARCHIWUM DO SLACK</span>
                 </button>
             </div>
 
             <div class="history-footer">
-                <button class="sys-btn tool-btn two-lines" id="btn-clear-history">
+                <button class="sys-btn tool-btn two-lines" id="btn-clear-history" type="button">
                     <span class="btn-text">BAZA</span>
                     <span class="sub-text">CZYŚĆ</span>
                 </button>
-                <button class="sys-btn tool-btn active-tool two-lines" id="btn-close-history">
+                <button class="sys-btn tool-btn active-tool two-lines" id="btn-close-history" type="button">
                     <span class="btn-text">POWRÓT</span>
                     <span class="sub-text">ZAMKNIJ</span>
                 </button>
@@ -158,11 +170,11 @@
                     CZY NA PEWNO CHCESZ SKASOWAĆ CAŁĄ BAZĘ DANYCH?
                 </div>
                 <div class="dialog-actions">
-                    <button class="sys-btn tool-btn two-lines" id="btn-confirm-cancel">
+                    <button class="sys-btn tool-btn two-lines" id="btn-confirm-cancel" type="button">
                         <span class="btn-text">ANULUJ</span>
                         <span class="sub-text">POWRÓT</span>
                     </button>
-                    <button class="sys-btn tool-btn active-tool two-lines" id="btn-confirm-ok">
+                    <button class="sys-btn tool-btn active-tool two-lines" id="btn-confirm-ok" type="button">
                         <span class="btn-text">TAK</span>
                         <span class="sub-text">POTWIERDŹ</span>
                     </button>
