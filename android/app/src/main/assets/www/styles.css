@@ -180,7 +180,41 @@
     --bg-dialog-mask: rgba(0, 0, 0, 0.55);
 }
 
-/* === Reset & Base Setup === */
+/* === Insecure HTTP warning === */
+.insecure-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    background: var(--color-error);
+    color: #ffffff;
+    font-family: var(--font-tech);
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    line-height: 1.35;
+}
+
+.insecure-banner[hidden] {
+    display: none !important;
+}
+
+.insecure-banner strong {
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.insecure-banner code {
+    font-family: var(--font-tech);
+    background: rgba(0, 0, 0, 0.25);
+    padding: 1px 4px;
+}
+
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -204,6 +238,10 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
+    touch-action: manipulation;
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     transition: background-color var(--transition-speed) var(--transition-curve);
 }
 
@@ -1346,6 +1384,15 @@ canvas#capture-canvas {
     height: 28px;
     min-height: 28px;
     font-size: 10px;
+}
+
+/* iOS zoomuje stronę przy focusie inputu < 16px */
+@media (hover: none) and (pointer: coarse) {
+
+    #input-scanned-val,
+    #whatsapp-phone-input {
+        font-size: 16px;
+    }
 }
 
 /* === Custom Dialog Overlay === */

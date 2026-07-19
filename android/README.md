@@ -1,71 +1,57 @@
 # SYS.SCANNER — Android APK (bezpieczny WebView)
 
-## Dlaczego komunikat „dla starszego systemu”?
+## Play Protect: „dla starszej wersji Androida”
 
-Stary APK miał zbyt niski `targetSdk`. Ten projekt ustawia:
+Ten komunikat dotyczy **starego APK** (niski `targetSdk`). Ten projekt ustawia:
 
 | Parametr     | Wartość              | Znaczenie                               |
 | ------------ | -------------------- | --------------------------------------- |
 | `minSdk`     | **26** (Android 8.0) | Minimalny system                        |
-| `targetSdk`  | **35** (Android 15)  | Spełnia wymagania Play / bezpieczeństwo |
-| `compileSdk` | **35**               | Kompilacja pod aktualne API             |
+| `targetSdk`  | **36** (Android 16)  | Aktualne wymagania Play / Play Protect  |
+| `compileSdk` | **36**               | Kompilacja pod aktualne API             |
+| `versionCode`| **4**                | Wyższy niż stare pakiety                |
 
-## Bezpieczeństwo (włączone)
+**Zalecane:** PWA → https://s-pro-v.github.io/scan/ (bez APK).
+
+## Bezpieczeństwo
 
 - brak HTTP cleartext (`usesCleartextTraffic=false` + `network_security_config`)
-- brak backupu danych skanów / numerów (`allowBackup=false`)
-- kamera tylko po **runtime permission** + `PermissionRequest` WebView
-- assety przez **WebViewAssetLoader** (`https://appassets.androidplatform.net`) — bez `file://`
-- Safe Browsing WebView
-- ProGuard / R8 w release
-- WhatsApp / zewnętrzne linki w aplikacji systemowej (nie w WebView)
+- brak backupu (`allowBackup=false`)
+- kamera: runtime permission + `PermissionRequest` WebView
+- assety przez **WebViewAssetLoader** (`https://appassets.androidplatform.net`)
+- Safe Browsing WebView, ProGuard / R8 w release
+- WhatsApp / zewnętrzne linki w aplikacji systemowej
 
 ## Budowa APK (Android Studio)
 
-1. Zainstaluj [Android Studio](https://developer.android.com/studio) (SDK 35).
+1. Zainstaluj [Android Studio](https://developer.android.com/studio) (SDK 36).
 2. Otwórz folder `android/` jako projekt.
-3. Przed buildem zsynchronizuj pliki WWW:
+3. Zsynchronizuj WWW:
 
 ```bat
 cd android
 sync-assets.bat
 ```
 
-4. **Build → Build Bundle(s) / APK(s) → Build APK(s)**  
-   albo w terminalu:
+4. **Build → Build APK(s)** albo:
 
 ```bat
-gradlew.bat assembleRelease
-```
-
-5. APK: `android/app/build/outputs/apk/release/app-release.apk`  
-   (wymaga podpisania — Studio zaproponuje keystore przy pierwszym release).
-
-### Szybki test (debug)
-
-```bat
-sync-assets.bat
 gradlew.bat assembleDebug
 ```
 
 Debug APK: `app/build/outputs/apk/debug/app-debug.apk`  
 (ID: `com.oxy.sysscanner.debug`)
 
-## Instalacja na telefonie
+Release:
 
-1. Włącz **Opcje deweloperskie → Debugowanie USB** albo skopiuj APK.
-2. Przy instalacji na Android 13+ zezwól na źródło (ten komputer / pliki).
-3. Przy pierwszym uruchomieniu **zezwól na kamerę**.
-
-## Po 31.08.2026 (Google Play)
-
-Nowe aplikacje w Play będą wymagały `targetSdk 36`. Wtedy w `app/build.gradle.kts` podnieś:
-
-```kotlin
-compileSdk = 36
-targetSdk = 36
+```bat
+gradlew.bat assembleRelease
 ```
 
-## Uwaga
+Wymaga keystore (Studio zaproponuje przy pierwszym release).
 
-Nie instaluj losowych starych APK z nieznanego źródła. Ten folder `android/` to oficjalny wrapper pod aktualne wymagania bezpieczeństwa.
+## Instalacja
+
+1. Odinstaluj starą aplikację **SYS.SCAN** / **SYS.SCANNER**, jeśli była na telefonie.
+2. Zainstaluj nowy APK z tego folderu.
+3. Zezwól na kamerę przy pierwszym uruchomieniu.

@@ -26,11 +26,16 @@ Kliknij dwukrotnie:
 
 ## Instalacja PWA
 
-1. Wejdź przez **HTTPS** (lub localhost).
-2. Przycisk **INSTALUJ** albo menu → Dodaj do ekranu głównego.
+1. Wejdź na **https://s-pro-v.github.io/scan/** (kłódka HTTPS).
+2. Chrome → **Zainstaluj aplikację** / **Dodaj do ekranu głównego**.
+3. Przycisk **INSTALUJ** w nagłówku (gdy przeglądarka go pokaże).
+
+### Play Protect blokuje „SYS.SCAN”
+
+To zwykle **stara APK**, nie strona WWW. Kliknij OK, odinstaluj starą aplikację z telefonu i korzystaj z PWA powyżej — albo zbuduj nowy APK z folderu `android/` (`targetSdk 36`).
 
 ## Pliki PWA
 
 - `manifest.webmanifest`
-- `sw.js` (v3)
+- `sw.js` (v4)
 - przycisk instalacji w nagłówku

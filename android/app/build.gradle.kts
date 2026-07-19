@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "com.oxy.sysscanner"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.oxy.sysscanner"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 3
-        versionName = "1.2.0"
+        targetSdk = 36
+        versionCode = 4
+        versionName = "1.3.0"
 
         vectorDrawables.useSupportLibrary = true
     }

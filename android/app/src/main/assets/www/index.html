@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ff7120" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#e65c00" media="(prefers-color-scheme: light)">
     <meta name="color-scheme" content="dark light">
@@ -26,6 +27,11 @@
 </head>
 
 <body>
+    <div id="insecure-banner" class="insecure-banner" hidden>
+        <strong>POŁĄCZENIE NIEJEST BEZPIECZNE</strong>
+        <span>Kamera i PWA wymagają HTTPS albo localhost. Uruchom <code>start-https.bat</code> i otwórz adres https://…
+            z terminala.</span>
+    </div>
     <div class="oxy-mobile-env">
         <header class="panel top-module">
             <div class="corner-bracket top-left"></div>
@@ -42,7 +48,8 @@
                     <button class="sys-btn tool-btn icon-btn" id="btn-toggle-theme" type="button" title="Motyw">
                         <span class="btn-text" id="theme-btn-text">☀</span>
                     </button>
-                    <button class="sys-btn tool-btn" id="btn-install-pwa" type="button" title="Zainstaluj aplikację" hidden>
+                    <button class="sys-btn tool-btn" id="btn-install-pwa" type="button" title="Zainstaluj aplikację"
+                        hidden>
                         <span class="btn-text">INSTALUJ</span>
                     </button>
                     <button class="sys-btn tool-btn" id="btn-toggle-history" type="button">

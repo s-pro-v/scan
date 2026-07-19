@@ -1,5 +1,5 @@
 /* SYS.SCANNER PWA — cache shell + bezpieczny fetch (tylko same-origin) */
-const CACHE_NAME = "sys-scanner-v3";
+const CACHE_NAME = "sys-scanner-v4";
 const APP_SHELL = [
   "./",
   "./index.html",

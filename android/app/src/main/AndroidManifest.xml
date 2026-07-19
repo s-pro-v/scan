@@ -26,7 +26,7 @@
         android:theme="@style/Theme.SysScanner"
         android:usesCleartextTraffic="false"
         android:hardwareAccelerated="true"
-        tools:targetApi="35">
+        tools:targetApi="36">
 
         <activity
             android:name=".MainActivity"

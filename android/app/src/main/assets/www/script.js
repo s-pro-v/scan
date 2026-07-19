@@ -92,13 +92,17 @@ class CameraCore {
     }
 
     // Sprawdzenie protokołu (wymagane HTTPS dla kamery)
+    const insecureBanner = document.getElementById("insecure-banner");
     if (window.isSecureContext === false) {
       this.sysLog("BŁĄD KRYTYCZNY: BRAK HTTPS. KAMERA ZABLOKOWANA.", "error");
+      this.sysLog("URUCHOM start-https.bat I OTWÓRZ ADRES https://", "error");
       this.btnPower.classList.add("disabled");
+      if (insecureBanner) insecureBanner.hidden = false;
     } else {
       this.sysLog("SYSTEM GOTOWY. OCZEKUJE NA ZASILANIE.", "sys");
       this.btnPower.classList.add("active-tool");
       this.btnPower.querySelector(".sub-text").textContent = "URUCHOM";
+      if (insecureBanner) insecureBanner.hidden = true;
     }
 
     if (this.hasNativeDetector) {
@@ -1141,8 +1145,28 @@ class CameraCore {
   }
 }
 
+function lockPageZoom() {
+  const block = (event) => {
+    if (event.touches && event.touches.length > 1) event.preventDefault();
+  };
+  ["gesturestart", "gesturechange", "gestureend"].forEach((type) => {
+    document.addEventListener(type, (event) => event.preventDefault(), {
+      passive: false,
+    });
+  });
+  document.addEventListener("touchmove", block, { passive: false });
+  document.addEventListener(
+    "wheel",
+    (event) => {
+      if (event.ctrlKey) event.preventDefault();
+    },
+    { passive: false },
+  );
+}
+
 // Start aplikacji po załadowaniu drzewa DOM
 document.addEventListener("DOMContentLoaded", () => {
+  lockPageZoom();
   window.OXY_CameraSys = new CameraCore();
 
   if ("serviceWorker" in navigator && window.isSecureContext) {
