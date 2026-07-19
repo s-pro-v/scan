@@ -1,4 +1,4 @@
-const CACHE_NAME = "sys-scanner-v1";
+const CACHE_NAME = "sys-scanner-v2";
 const APP_SHELL = [
   "./",
   "./index.html",

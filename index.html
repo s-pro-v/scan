@@ -61,7 +61,15 @@
                         <span class="reticle-corner tr"></span>
                         <span class="reticle-corner bl"></span>
                         <span class="reticle-corner br"></span>
+                        <div class="scan-hit-glow" aria-hidden="true"></div>
                         <div class="scan-line" id="scan-laser"></div>
+                        <span class="scan-hit-label" id="scan-hit-label">ZESKANOWANO</span>
+                    </div>
+                    <div class="zoom-module" id="zoom-container">
+                        <div class="zoom-label">
+                            <span>ZOOM</span><span id="zoom-val">1.0x</span>
+                        </div>
+                        <input type="range" id="zoom-slider" class="sys-slider" min="1" max="3" step="0.1" value="1">
                     </div>
                 </div>
             </div>
@@ -79,42 +87,39 @@
 
             <div class="terminal-log" id="event-log"></div>
 
-            <div class="zoom-module" id="zoom-container">
-                <div class="zoom-label">
-                    <span>OPTICAL_ZOOM</span><span id="zoom-val">1.0x</span>
-                </div>
-                <input type="range" id="zoom-slider" class="sys-slider" min="1" max="3" step="0.1" value="1">
-            </div>
-
             <div class="hardware-controls">
-                <button class="sys-btn tool-btn two-lines" id="btn-power" type="button">
+                <button class="sys-btn tool-btn two-lines" id="btn-power" type="button" title="Włącz / wyłącz kamerę">
                     <span class="btn-text">PWR</span>
-                    <span class="sub-text">OFFLINE</span>
+                    <span class="sub-text">KAMERA</span>
                 </button>
-                <button class="sys-btn tool-btn disabled two-lines" id="btn-lens-cycle" type="button">
-                    <span class="btn-text">LENS_SW</span>
-                    <span class="sub-text" id="lens-label">SZUKAM...</span>
+                <button class="sys-btn tool-btn disabled two-lines" id="btn-lens-cycle" type="button"
+                    title="Przełącz obiektyw">
+                    <span class="btn-text">LENS</span>
+                    <span class="sub-text" id="lens-label">OBIEKTYW</span>
                 </button>
-                <button class="sys-btn tool-btn disabled two-lines" id="btn-torch" type="button">
+                <button class="sys-btn tool-btn disabled two-lines" id="btn-torch" type="button" title="Latarka">
                     <span class="btn-text">TORCH</span>
-                    <span class="sub-text">FLESZ</span>
+                    <span class="sub-text">LATARKA</span>
                 </button>
             </div>
 
             <div class="action-grid">
                 <div class="radiator-vent"></div>
                 <div class="action-grid-row">
-                    <button class="sys-btn massive-btn scan-action disabled two-lines" id="btn-scan-code" type="button">
+                    <button class="sys-btn massive-btn scan-action disabled two-lines" id="btn-scan-code" type="button"
+                        title="Jednorazowy skan kodu">
                         <span class="btn-text">SKAN</span>
-                        <span class="sub-text">RĘCZNY</span>
+                        <span class="sub-text">JEDNORAZOWY</span>
                     </button>
-                    <button class="sys-btn massive-btn disabled two-lines" id="btn-auto-scan" type="button">
+                    <button class="sys-btn massive-btn disabled two-lines" id="btn-auto-scan" type="button"
+                        title="Ciągłe skanowanie">
                         <span class="btn-text">AUTO</span>
-                        <span class="sub-text" id="auto-scan-text">WYŁ.</span>
+                        <span class="sub-text" id="auto-scan-text">WYŁĄCZONE</span>
                     </button>
-                    <button class="sys-btn massive-btn disabled two-lines" id="btn-capture" type="button">
+                    <button class="sys-btn massive-btn disabled two-lines" id="btn-capture" type="button"
+                        title="Zapisz zdjęcie">
                         <span class="btn-text">FOTO</span>
-                        <span class="sub-text">ZAPIS</span>
+                        <span class="sub-text">ZDJĘCIE</span>
                     </button>
                 </div>
             </div>
@@ -130,18 +135,19 @@
                 <!-- Spans inserted dynamically by JS -->
             </div>
 
-            <div class="slack-integration-panel">
-                <div class="slack-panel-header">
-                    <span class="slack-integration-title">SLACK INTEGRATION // UPLINK</span>
+            <div class="whatsapp-integration-panel">
+                <div class="whatsapp-panel-header">
+                    <span class="whatsapp-integration-title">WHATSAPP // UPLINK</span>
                 </div>
-                <div class="slack-input-row">
-                    <input type="password" id="slack-webhook-input" placeholder="WPROWADŹ WEBHOOK URL...">
-                    <button class="sys-btn tool-btn inline-btn" id="btn-save-webhook" type="button">
+                <div class="whatsapp-input-row">
+                    <input type="tel" id="whatsapp-phone-input" placeholder="NR TEL. Z KIERUNKOWYM np. 48500111222"
+                        autocomplete="tel">
+                    <button class="sys-btn tool-btn inline-btn" id="btn-save-whatsapp" type="button">
                         <span class="btn-text">ZAPISZ</span>
                     </button>
                 </div>
-                <button class="sys-btn massive-btn slack-btn" id="btn-send-to-slack" type="button">
-                    <span class="btn-text">WYŚLIJ ARCHIWUM DO SLACK</span>
+                <button class="sys-btn massive-btn whatsapp-btn" id="btn-send-to-whatsapp" type="button">
+                    <span class="btn-text">WYŚLIJ ARCHIWUM NA WHATSAPP</span>
                 </button>
             </div>
 

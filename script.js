@@ -17,14 +17,17 @@ class CameraCore {
     this.btnScanCode = document.getElementById("btn-scan-code");
     this.btnCapture = document.getElementById("btn-capture");
 
-    // Nowe elementy UI dla Auto Scan i Slack
+    // Nowe elementy UI dla Auto Scan i WhatsApp
     this.btnAutoScan = document.getElementById("btn-auto-scan");
     this.autoScanText = document.getElementById("auto-scan-text");
     this.inputScannedVal = document.getElementById("input-scanned-val");
     this.btnCopyInput = document.getElementById("btn-copy-input");
-    this.slackWebhookInput = document.getElementById("slack-webhook-input");
-    this.btnSaveWebhook = document.getElementById("btn-save-webhook");
-    this.btnSendToSlack = document.getElementById("btn-send-to-slack");
+    this.whatsappPhoneInput = document.getElementById("whatsapp-phone-input");
+    this.btnSaveWhatsapp = document.getElementById("btn-save-whatsapp");
+    this.btnSendToWhatsapp = document.getElementById("btn-send-to-whatsapp");
+    this.scanReticle = document.getElementById("scan-reticle");
+    this.scanHitLabel = document.getElementById("scan-hit-label");
+    this.scanFlashTimer = null;
 
     this.zoomContainer = document.getElementById("zoom-container");
     this.zoomSlider = document.getElementById("zoom-slider");
@@ -79,10 +82,10 @@ class CameraCore {
     this.initControls();
     this.applyTheme();
 
-    // Wczytaj webhook z pamięci
-    if (this.slackWebhookInput) {
-      this.slackWebhookInput.value =
-        localStorage.getItem("oxy_slack_webhook") || "";
+    // Wczytaj numer WhatsApp z pamięci
+    if (this.whatsappPhoneInput) {
+      this.whatsappPhoneInput.value =
+        localStorage.getItem("oxy_whatsapp_phone") || "";
     }
 
     // Sprawdzenie protokołu (wymagane HTTPS dla kamery)
@@ -92,7 +95,7 @@ class CameraCore {
     } else {
       this.sysLog("SYSTEM GOTOWY. OCZEKUJE NA ZASILANIE.", "sys");
       this.btnPower.classList.add("active-tool");
-      this.btnPower.querySelector(".sub-text").textContent = "KLIKNIJ";
+      this.btnPower.querySelector(".sub-text").textContent = "URUCHOM";
     }
 
     if (this.hasNativeDetector) {
@@ -161,7 +164,7 @@ class CameraCore {
     this.infoLabel.textContent = "SENSOR // OFFLINE";
     this.resLabel.textContent = "0x0";
     this.btnPower.classList.remove("active-tool");
-    this.btnPower.querySelector(".sub-text").textContent = "OFFLINE";
+    this.btnPower.querySelector(".sub-text").textContent = "WYŁĄCZONA";
 
     this.btnTorch.classList.add("disabled");
     this.btnTorch.classList.remove("active-tool");
@@ -324,7 +327,7 @@ class CameraCore {
         this.zoomContainer.style.display = "none";
       }
 
-      this.lensLabel.textContent = `LENS_ID: ${this.currentCameraIndex}`;
+      this.lensLabel.textContent = `OBIEKTYW ${this.currentCameraIndex + 1}`;
 
       try {
         this.sysLog(
@@ -360,12 +363,12 @@ class CameraCore {
 
         this.isPowerOn = true;
         this.btnPower.classList.add("active-tool");
-        this.btnPower.querySelector(".sub-text").textContent = "ONLINE";
+        this.btnPower.querySelector(".sub-text").textContent = "WŁĄCZONA";
 
         if (this.rearCameras.length > 1) {
           this.btnLensCycle.classList.remove("disabled");
         } else {
-          this.lensLabel.textContent = "1 SENSOR";
+          this.lensLabel.textContent = "1 OBIEKTYW";
         }
         this.btnScanCode.classList.remove("disabled");
         this.btnAutoScan.classList.remove("disabled");
@@ -634,6 +637,19 @@ class CameraCore {
       }, 800);
     }
 
+    const isDuplicate = this.scannedCodes.some(
+      (item) => item.value === rawValue,
+    );
+
+    if (isDuplicate) {
+      if (!isSilent) {
+        this.formatLabel.textContent = "FMT: DUPLIKAT";
+        this.sysLog("DUPLIKAT — NIE DODANO DO BAZY", "error");
+        return true;
+      }
+      return false;
+    }
+
     this.formatLabel.textContent = `FMT: ${format}`;
     this.sysLog(`FORMAT: ${format}`, "success");
     this.sysLog(rawValue, "highlight");
@@ -650,7 +666,25 @@ class CameraCore {
     );
 
     if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    this.flashScanSuccess(format);
     return true;
+  }
+
+  flashScanSuccess(format) {
+    if (!this.scanReticle) return;
+    this.scanReticle.classList.remove("scanned");
+    void this.scanReticle.offsetWidth;
+    this.scanReticle.classList.add("scanned");
+    if (this.formatLabel) {
+      this.formatLabel.textContent = "FMT: ZESKANOWANO";
+    }
+    clearTimeout(this.scanFlashTimer);
+    this.scanFlashTimer = setTimeout(() => {
+      if (this.scanReticle) this.scanReticle.classList.remove("scanned");
+      if (this.formatLabel && format) {
+        this.formatLabel.textContent = `FMT: ${format}`;
+      }
+    }, 900);
   }
 
   async detectCode(isSilent = false) {
@@ -713,7 +747,7 @@ class CameraCore {
     } finally {
       if (!isSilent) {
         this.scanLaser.classList.remove("active");
-        if (btnSub) btnSub.textContent = "RĘCZNY";
+        if (btnSub) btnSub.textContent = "JEDNORAZOWY";
       }
     }
   }
@@ -725,7 +759,7 @@ class CameraCore {
 
     if (this.isAutoScanOn) {
       this.btnAutoScan.classList.add("active-tool");
-      this.autoScanText.textContent = "WŁ.";
+      this.autoScanText.textContent = "WŁĄCZONE";
       if (this.scanLaser) this.scanLaser.classList.add("active");
       this.sysLog("TRYB AUTOMATYCZNY AKTYWNY", "sys");
       if (!this.hasNativeDetector) {
@@ -790,59 +824,58 @@ class CameraCore {
       this.btnAutoScan.classList.remove("active-tool");
     }
     if (this.autoScanText) {
-      this.autoScanText.textContent = "WYŁ.";
+      this.autoScanText.textContent = "WYŁĄCZONE";
     }
     if (this.scanLaser) {
       this.scanLaser.classList.remove("active");
     }
   }
 
-  isValidSlackWebhook(url) {
-    try {
-      const parsed = new URL(url);
-      return (
-        parsed.protocol === "https:" &&
-        parsed.hostname === "hooks.slack.com" &&
-        parsed.pathname.startsWith("/services/")
-      );
-    } catch {
-      return false;
-    }
+  normalizeWhatsappPhone(raw) {
+    return String(raw || "").replace(/\D/g, "");
   }
 
-  saveSlackWebhook() {
-    if (!this.slackWebhookInput) return;
-    const webhookUrl = this.slackWebhookInput.value.trim();
-
-    if (!webhookUrl) {
-      localStorage.removeItem("oxy_slack_webhook");
-      this.sysLog("USUNIĘTO ADRES WEBHOOK SLACKA", "sys");
-      return;
-    }
-
-    if (!this.isValidSlackWebhook(webhookUrl)) {
-      this.sysLog("BŁĄD: NIEPRAWIDŁOWY WEBHOOK (hooks.slack.com)", "error");
-      return;
-    }
-
-    localStorage.setItem("oxy_slack_webhook", webhookUrl);
-    this.sysLog("ZAPISANO ADRES WEBHOOK SLACKA", "success");
+  isValidWhatsappPhone(phone) {
+    return /^\d{9,15}$/.test(phone);
   }
 
-  async sendArchiveToSlack() {
-    if (!this.slackWebhookInput) return;
-    const webhookUrl =
-      this.slackWebhookInput.value.trim() ||
-      localStorage.getItem("oxy_slack_webhook") ||
-      "";
+  saveWhatsappPhone() {
+    if (!this.whatsappPhoneInput) return;
+    const phone = this.normalizeWhatsappPhone(this.whatsappPhoneInput.value);
 
-    if (!webhookUrl) {
-      this.sysLog("BŁĄD: BRAK WEBHOOKA SLACKA", "error");
+    if (!phone) {
+      localStorage.removeItem("oxy_whatsapp_phone");
+      this.whatsappPhoneInput.value = "";
+      this.sysLog("USUNIĘTO NUMER WHATSAPP", "sys");
       return;
     }
 
-    if (!this.isValidSlackWebhook(webhookUrl)) {
-      this.sysLog("BŁĄD: NIEPRAWIDŁOWY WEBHOOK (hooks.slack.com)", "error");
+    if (!this.isValidWhatsappPhone(phone)) {
+      this.sysLog("BŁĄD: NUMER 9–15 CYFR Z KIERUNKOWYM (np. 48500…)", "error");
+      return;
+    }
+
+    this.whatsappPhoneInput.value = phone;
+    localStorage.setItem("oxy_whatsapp_phone", phone);
+    this.sysLog("ZAPISANO NUMER WHATSAPP", "success");
+  }
+
+  sendArchiveToWhatsapp() {
+    if (!this.whatsappPhoneInput) return;
+
+    const phone = this.normalizeWhatsappPhone(
+      this.whatsappPhoneInput.value.trim() ||
+        localStorage.getItem("oxy_whatsapp_phone") ||
+        "",
+    );
+
+    if (!phone) {
+      this.sysLog("BŁĄD: BRAK NUMERU WHATSAPP", "error");
+      return;
+    }
+
+    if (!this.isValidWhatsappPhone(phone)) {
+      this.sysLog("BŁĄD: NIEPRAWIDŁOWY NUMER WHATSAPP", "error");
       return;
     }
 
@@ -851,40 +884,19 @@ class CameraCore {
       return;
     }
 
-    this.showConfirm("WYSŁAĆ RAPORT ARCHIWUM DO KANAŁU SLACK?", async () => {
-      const sendBtnText = this.btnSendToSlack.querySelector(".btn-text");
-      const originalBtnText = sendBtnText.textContent;
-
-      sendBtnText.textContent = "WYSYŁANIE...";
-      this.btnSendToSlack.classList.add("disabled");
-
-      const textHeader = `*Mobilny Skaner OXY — Raport Archiwum Skanów*\n*Ilość skanów:* ${this.scannedCodes.length}\n*Data raportu:* ${new Date().toLocaleString()}\n\n`;
+    this.showConfirm("WYSŁAĆ RAPORT ARCHIWUM NA WHATSAPP?", () => {
+      const textHeader = `Mobilny Skaner OXY — Raport Archiwum\nIlość skanów: ${this.scannedCodes.length}\nData: ${new Date().toLocaleString()}\n\n`;
       const textBody = this.scannedCodes
-        .map((item) => `• *[${item.format}]* (${item.time}): \`${item.value}\``)
+        .map((item) => `• [${item.format}] (${item.time}): ${item.value}`)
         .join("\n");
+      const message = textHeader + textBody;
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
-      const payload = {
-        text: textHeader + textBody,
-      };
-
-      try {
-        const response = await fetch(webhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        this.sysLog("WYSŁANO RAPORT DO SLACKA", "success");
-      } catch (err) {
-        this.sysLog(`BŁĄD RAPORTOWANIA: ${err.message}`, "error");
-      } finally {
-        sendBtnText.textContent = originalBtnText;
-        this.btnSendToSlack.classList.remove("disabled");
+      const opened = window.open(url, "_blank", "noopener,noreferrer");
+      if (!opened) {
+        window.location.href = url;
       }
+      this.sysLog("OTWARTO WHATSAPP Z RAPORTEM", "success");
     });
   }
 
@@ -1063,13 +1075,13 @@ class CameraCore {
       this.btnClearHistory.addEventListener("click", () => this.clearHistory());
     if (this.btnToggleTheme)
       this.btnToggleTheme.addEventListener("click", () => this.toggleTheme());
-    if (this.btnSaveWebhook)
-      this.btnSaveWebhook.addEventListener("click", () =>
-        this.saveSlackWebhook(),
+    if (this.btnSaveWhatsapp)
+      this.btnSaveWhatsapp.addEventListener("click", () =>
+        this.saveWhatsappPhone(),
       );
-    if (this.btnSendToSlack)
-      this.btnSendToSlack.addEventListener("click", () =>
-        this.sendArchiveToSlack(),
+    if (this.btnSendToWhatsapp)
+      this.btnSendToWhatsapp.addEventListener("click", () =>
+        this.sendArchiveToWhatsapp(),
       );
   }
 }
