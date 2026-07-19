@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SYS.SCANNER</string>
+    <string name="camera_permission_required">Aby skanować kody, potrzebny jest dostęp do kamery.</string>
+    <string name="camera_permission_denied">Odmowa kamery — skaner nie będzie działał.</string>
+</resources>

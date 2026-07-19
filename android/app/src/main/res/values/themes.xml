@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SysScanner" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#FF7120</item>
+        <item name="colorPrimaryVariant">#E65C00</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:statusBarColor">#181818</item>
+        <item name="android:navigationBarColor">#181818</item>
+        <item name="android:windowBackground">#181818</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

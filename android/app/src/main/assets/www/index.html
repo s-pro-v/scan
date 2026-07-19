@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#ff7120" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#e65c00" media="(prefers-color-scheme: light)">
+    <meta name="color-scheme" content="dark light">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SYS.SCANNER">
+    <meta name="application-name" content="SYS.SCANNER">
+    <meta name="description" content="Mobilny skaner kodów OXY — kamera, auto-skan, archiwum, WhatsApp">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>SYS.SCANNER</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="oxy-mobile-env">
+        <header class="panel top-module">
+            <div class="corner-bracket top-left"></div>
+            <div class="corner-bracket bottom-right"></div>
+            <div class="header-content">
+                <div class="header-branding">
+                    <h1>SYS.SCANNER</h1>
+                    <div class="kernel">
+                        <span>WEBRTC // MULTI_LENS</span>
+                        <div class="zebra-stripe"></div>
+                    </div>
+                </div>
+                <div class="header-controls-group">
+                    <button class="sys-btn tool-btn icon-btn" id="btn-toggle-theme" type="button" title="Motyw">
+                        <span class="btn-text" id="theme-btn-text">☀</span>
+                    </button>
+                    <button class="sys-btn tool-btn" id="btn-install-pwa" type="button" title="Zainstaluj aplikację" hidden>
+                        <span class="btn-text">INSTALUJ</span>
+                    </button>
+                    <button class="sys-btn tool-btn" id="btn-toggle-history" type="button">
+                        <span class="btn-text">DATA_DB</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="panel viewport-module">
+            <div class="corner-bracket top-right"></div>
+            <div class="corner-bracket bottom-left"></div>
+
+            <div class="viewport-header">
+                <span class="data-label" id="cam-info">SYS // OFFLINE</span>
+                <span class="data-label" id="barcode-format">FMT: UNKNOWN</span>
+                <span class="tech-coords">RES: <span id="cam-res">0x0</span></span>
+            </div>
+
+            <div class="camera-container">
+                <video id="live-feed" autoplay playsinline webkit-playsinline muted></video>
+                <canvas id="capture-canvas"></canvas>
+                <div class="hud-layer">
+                    <div class="scan-reticle" id="scan-reticle">
+                        <span class="reticle-corner tl"></span>
+                        <span class="reticle-corner tr"></span>
+                        <span class="reticle-corner bl"></span>
+                        <span class="reticle-corner br"></span>
+                        <div class="scan-hit-glow" aria-hidden="true"></div>
+                        <div class="scan-line" id="scan-laser"></div>
+                        <span class="scan-hit-label" id="scan-hit-label">ZESKANOWANO</span>
+                    </div>
+                    <div class="zoom-module" id="zoom-container">
+                        <div class="zoom-label">
+                            <span>ZOOM</span><span id="zoom-val">1.0x</span>
+                        </div>
+                        <input type="range" id="zoom-slider" class="sys-slider" min="1" max="3" step="0.1" value="1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="scanned-field-container">
+                <input type="text" id="input-scanned-val" placeholder="OCZEKIWANIE NA SKAN..." readonly>
+                <button class="sys-btn tool-btn inline-btn" id="btn-copy-input" type="button">
+                    <span class="btn-text">KOPIUJ</span>
+                </button>
+            </div>
+        </main>
+
+        <footer class="panel control-module">
+            <div class="corner-bracket top-left"></div>
+
+            <div class="terminal-log" id="event-log"></div>
+
+            <div class="hardware-controls">
+                <button class="sys-btn tool-btn two-lines" id="btn-power" type="button" title="Włącz / wyłącz kamerę">
+                    <span class="btn-text">PWR</span>
+                    <span class="sub-text">KAMERA</span>
+                </button>
+                <button class="sys-btn tool-btn disabled two-lines" id="btn-lens-cycle" type="button"
+                    title="Przełącz obiektyw">
+                    <span class="btn-text">LENS</span>
+                    <span class="sub-text" id="lens-label">OBIEKTYW</span>
+                </button>
+                <button class="sys-btn tool-btn disabled two-lines" id="btn-torch" type="button" title="Latarka">
+                    <span class="btn-text">TORCH</span>
+                    <span class="sub-text">LATARKA</span>
+                </button>
+            </div>
+
+            <div class="action-grid">
+                <div class="radiator-vent"></div>
+                <div class="action-grid-row">
+                    <button class="sys-btn massive-btn scan-action disabled two-lines" id="btn-scan-code" type="button"
+                        title="Jednorazowy skan kodu">
+                        <span class="btn-text">SKAN</span>
+                        <span class="sub-text">JEDNORAZOWY</span>
+                    </button>
+                    <button class="sys-btn massive-btn disabled two-lines" id="btn-auto-scan" type="button"
+                        title="Ciągłe skanowanie">
+                        <span class="btn-text">AUTO</span>
+                        <span class="sub-text" id="auto-scan-text">WYŁĄCZONE</span>
+                    </button>
+                    <button class="sys-btn massive-btn disabled two-lines" id="btn-capture" type="button"
+                        title="Zapisz zdjęcie">
+                        <span class="btn-text">FOTO</span>
+                        <span class="sub-text">ZDJĘCIE</span>
+                    </button>
+                </div>
+            </div>
+        </footer>
+
+        <!-- History database overlay -->
+        <div class="history-overlay" id="history-overlay">
+            <div class="history-header">
+                <span class="history-title">SYS // ARCHIWUM_SKANOW</span>
+                <div class="zebra-stripe"></div>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- Spans inserted dynamically by JS -->
+            </div>
+
+            <div class="whatsapp-integration-panel">
+                <div class="whatsapp-panel-header">
+                    <span class="whatsapp-integration-title">WHATSAPP // UPLINK</span>
+                </div>
+                <div class="whatsapp-input-row">
+                    <input type="tel" id="whatsapp-phone-input" placeholder="NR TEL. Z KIERUNKOWYM np. 48500111222"
+                        autocomplete="tel">
+                    <button class="sys-btn tool-btn inline-btn" id="btn-save-whatsapp" type="button">
+                        <span class="btn-text">ZAPISZ</span>
+                    </button>
+                </div>
+                <button class="sys-btn massive-btn whatsapp-btn" id="btn-send-to-whatsapp" type="button">
+                    <span class="btn-text">WYŚLIJ ARCHIWUM NA WHATSAPP</span>
+                </button>
+            </div>
+
+            <div class="history-footer">
+                <button class="sys-btn tool-btn two-lines" id="btn-clear-history" type="button">
+                    <span class="btn-text">BAZA</span>
+                    <span class="sub-text">CZYŚĆ</span>
+                </button>
+                <button class="sys-btn tool-btn active-tool two-lines" id="btn-close-history" type="button">
+                    <span class="btn-text">POWRÓT</span>
+                    <span class="sub-text">ZAMKNIJ</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Custom confirmation modal -->
+        <div class="custom-dialog-overlay" id="custom-confirm-dialog">
+            <div class="custom-dialog-box">
+                <div class="corner-bracket top-left"></div>
+                <div class="corner-bracket bottom-right"></div>
+                <div class="dialog-header">
+                    <span class="dialog-title">SYS // POTWIERDZENIE</span>
+                    <div class="zebra-stripe"></div>
+                </div>
+                <div class="dialog-body" id="custom-confirm-message">
+                    CZY NA PEWNO CHCESZ SKASOWAĆ CAŁĄ BAZĘ DANYCH?
+                </div>
+                <div class="dialog-actions">
+                    <button class="sys-btn tool-btn two-lines" id="btn-confirm-cancel" type="button">
+                        <span class="btn-text">ANULUJ</span>
+                        <span class="sub-text">POWRÓT</span>
+                    </button>
+                    <button class="sys-btn tool-btn active-tool two-lines" id="btn-confirm-ok" type="button">
+                        <span class="btn-text">TAK</span>
+                        <span class="sub-text">POTWIERDŹ</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

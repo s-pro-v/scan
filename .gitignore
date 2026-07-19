@@ -1,0 +1,10 @@
+# Project root — ignore Android build junk
+android/.gradle/
+android/**/build/
+android/local.properties
+android/**/*.apk
+android/**/*.aab
+android/**/*.keystore
+android/**/*.jks
+.idea/
+*.iml
