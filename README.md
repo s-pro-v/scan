@@ -1,6 +1,6 @@
 # SYS.SCANNER
 
-Mobilny skaner kodów (PWA) — kamera, auto-skan, archiwum, WhatsApp.
+Mobilny skaner kodów (PWA)
 
 ## Używaj tego (nie starej APK)
 
